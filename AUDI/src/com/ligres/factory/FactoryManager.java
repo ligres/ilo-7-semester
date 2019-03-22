@@ -5,11 +5,11 @@ import com.ligres.pieces.Piece;
 import com.ligres.pieces.PieceType;
 import com.ligres.threads.PieceMaker;
 
-public class FactoryManager extends Thread{
-	private PieceMaker[] pieceMaker;
-	
+public class FactoryManager extends Thread {
+	private PieceMaker[] pieces;
+
 	public FactoryManager() {
-		this.pieceMaker = new PieceMaker[PieceType.values().length];
+		this.pieces = new PieceMaker[PieceType.values().length];
 
 		Piece pieceMotor = new Piece(PieceType.MOTOR, 10, 12000);
 		Piece pieceCarroceria = new Piece(PieceType.CARROCERIA, 20, 15000);
@@ -23,42 +23,51 @@ public class FactoryManager extends Thread{
 		PieceMaker makerBanco = new PieceMaker(pieceBanco);
 		PieceMaker makerEletronica = new PieceMaker(pieceEletronica);
 
-		this.pieceMaker[0] = makerMotor;
-		this.pieceMaker[1] = makerCarroceria;
-		this.pieceMaker[2] = makerPneu;
-		this.pieceMaker[3] = makerBanco;
-		this.pieceMaker[4] = makerEletronica;
+		this.pieces[0] = makerMotor;
+		this.pieces[1] = makerCarroceria;
+		this.pieces[2] = makerPneu;
+		this.pieces[3] = makerBanco;
+		this.pieces[4] = makerEletronica;
 	}
 
 	public void startFactory() {
 		start();
-		for (int i = 0; i < pieceMaker.length; i++) {
-			pieceMaker[i].start();
+		for (int i = 0; i < pieces.length; i++) {
+			pieces[i].start();
 		}
 	}
-	
+
 	@Override
 	public void run() {
 		while (true) {
 			boolean isCarReadyToBuild = true;
-			for (int i = 0; i < pieceMaker.length; i++) {
-				if (pieceMaker[i].getReadyProducts() < Car.getRequirement(pieceMaker[i].getPiece().getProductName())) {
+			for (int i = 0; i < pieces.length; i++) {
+				if (pieces[i].getReadyProducts() < Car.getRequirement(pieces[i].getPiece().getProductName())) {
 					isCarReadyToBuild = false;
 				}
 			}
-			if (isCarReadyToBuild)
-			{
-				for (int i = 0; i < pieceMaker.length; i++) {
-					pieceMaker[i].setReadyProducts(Car.getRequirement(pieceMaker[i].getPiece().getProductName()));
+			if (isCarReadyToBuild) {
+				System.out.println("One car has been made!");
+				for (int i = 0; i < pieces.length; i++) {
+					synchronized (pieces[i]) {
+						int needed = Car.getRequirement(pieces[i].getPiece().getProductName());
+						pieces[i].setReadyProducts(pieces[i].getReadyProducts() - needed);
+						if (pieces[i].isWaiting()) {
+							pieces[i].notify();
+						}
+					}
+
 				}
-			}
-			for (int i = 0; i < pieceMaker.length; i++) {
-				pieceMaker[i].notify();
 			}
 		}
 	}
 
+	public synchronized void notifyPieces() {
+		for (int i = 0; i < pieces.length; i++) {
+		}
+	}
+
 	public PieceMaker[] getPieces() {
-		return null;
+		return pieces;
 	}
 }

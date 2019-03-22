@@ -16,28 +16,27 @@ public class PieceMaker extends Thread {
 
 	@Override
 	public void run() {
-		while(true) {
-			if (readyProducts < piece.getStock())
-			{
+		while (true) {
+			if (readyProducts < piece.getStock()) {
 				isWaiting = false;
-				startToWaitTime = -1;
 				try {
+					startToWaitTime = System.currentTimeMillis();
 					Thread.sleep(piece.getTimeToBuild());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 				readyProducts++;
-				System.out.println("Thread: " + piece.getProductName() + " has made 1 piece to a total of " + readyProducts + "/" + piece.getStock() + ".");
-			}
-			else
-			{
-				try {
-					System.out.println("Thread: " + piece.getProductName() + " is waiting. Stock is full.");
-					startToWaitTime = System.currentTimeMillis();
-					isWaiting = true;
-					wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+				System.out.println("One " + piece.getProductName() + " has been made to a total of " + readyProducts
+						+ "/" + piece.getStock() + ".");
+			} else {
+				synchronized (this) {
+					try {
+						System.out.println("The stock of " + piece.getProductName() + " is full. Production stopped.");
+						isWaiting = true;
+						wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -51,12 +50,11 @@ public class PieceMaker extends Thread {
 		return piece;
 	}
 
-	public long getProgress()
-	{
+	public float getProgress() {
 		if (isWaiting) {
 			return 1;
 		}
-		long curTime = System.currentTimeMillis() - startToWaitTime;
+		float curTime = System.currentTimeMillis() - startToWaitTime;
 		curTime = curTime / piece.getTimeToBuild();
 		return curTime;
 	}
