@@ -1,13 +1,10 @@
 package com.ligres.userinterface;
 
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.SpringLayout;
-import javax.swing.SwingConstants;
 
 import com.ligres.threads.PieceMaker;
 

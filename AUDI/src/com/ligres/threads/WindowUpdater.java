@@ -15,6 +15,11 @@ public class WindowUpdater extends Thread {
 	public void run() {
 		while (true) {
 			mainWindow.update();
+			try {
+				sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

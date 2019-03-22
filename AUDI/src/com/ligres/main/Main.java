@@ -4,7 +4,7 @@ import com.ligres.factory.FactoryManager;
 import com.ligres.threads.WindowUpdater;
 import com.ligres.userinterface.MainWindow;
 
-public class FrodoMain {
+public class Main {
 
 	public static void main(String[] args) {
 		FactoryManager fm = new FactoryManager();

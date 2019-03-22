@@ -6,10 +6,15 @@ import com.ligres.pieces.PieceType;
 import com.ligres.threads.PieceMaker;
 
 public class FactoryManager extends Thread {
+	public static final int MAX_CAR_STOCK = 10;
 	private PieceMaker[] pieces;
+	private int piecesToBuildACar;
+	private int piecesDoneToBuildACar;
+	private int carsDone;
 
 	public FactoryManager() {
 		this.pieces = new PieceMaker[PieceType.values().length];
+		this.carsDone = 0;
 
 		Piece pieceMotor = new Piece(PieceType.MOTOR, 10, 12000);
 		Piece pieceCarroceria = new Piece(PieceType.CARROCERIA, 20, 15000);
@@ -28,6 +33,11 @@ public class FactoryManager extends Thread {
 		this.pieces[2] = makerPneu;
 		this.pieces[3] = makerBanco;
 		this.pieces[4] = makerEletronica;
+
+		piecesToBuildACar = 0;
+		for (int i = 0; i < pieces.length; i++) {
+			piecesToBuildACar += Car.getRequirement(pieces[i].getPiece().getProductName());
+		}
 	}
 
 	public void startFactory() {
@@ -48,6 +58,7 @@ public class FactoryManager extends Thread {
 			}
 			if (isCarReadyToBuild) {
 				System.out.println("One car has been made!");
+				carsDone++;
 				for (int i = 0; i < pieces.length; i++) {
 					synchronized (pieces[i]) {
 						int needed = Car.getRequirement(pieces[i].getPiece().getProductName());
@@ -69,5 +80,25 @@ public class FactoryManager extends Thread {
 
 	public PieceMaker[] getPieces() {
 		return pieces;
+	}
+
+	public int getCardDone() {
+		return carsDone;
+	}
+
+	public float getCarProgress()
+	{
+		piecesDoneToBuildACar = 0;
+		for (int i = 0; i < pieces.length; i++) {
+			if (pieces[i].getReadyProducts() >= Car.getRequirement(pieces[i].getPiece().getProductName()))
+			{
+			piecesDoneToBuildACar += Car.getRequirement(pieces[i].getPiece().getProductName());
+			}
+			else
+			{
+				piecesDoneToBuildACar += pieces[i].getReadyProducts();
+			}
+		}
+		return (float)piecesDoneToBuildACar / (float)piecesToBuildACar;
 	}
 }
