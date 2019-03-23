@@ -1,5 +1,6 @@
 package com.ligres.userinterface;
 
+import java.awt.Color;
 import java.awt.GridLayout;
 
 import javax.swing.JLabel;
@@ -17,6 +18,9 @@ public class PieceDisplay extends JPanel{
 	private JLabel currentStock;
 	private JLabel maximumStock;
 	private JProgressBar progress;
+	
+	private final Color colorOn = new Color(65, 206, 26, 255);
+	private final Color colorOff = new Color(204, 6, 6, 255);
 	
 	public PieceDisplay(PieceMaker piece)
 	{
@@ -51,9 +55,20 @@ public class PieceDisplay extends JPanel{
 	
 	public void update()
 	{
+		if (piece.isWaiting())
+		{
+			progress.setForeground(colorOff);
+			progress.setValue(100);
+			progress.setString("DESLIGADO");
+		}
+		else
+		{
+			progress.setForeground(colorOn);
+			progress.setValue((int)(piece.getProgress() * 100));
+			progress.setString(null);
+		}
 		currentStock.setText(piece.getReadyProducts() + "");
 		maximumStock.setText(piece.getPiece().getStock() + "");
-		progress.setValue((int)(piece.getProgress() * 100));
 		this.revalidate();
 	}
 }

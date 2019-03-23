@@ -11,11 +11,13 @@ public class FactoryManager extends Thread {
 	private int piecesToBuildACar;
 	private int piecesDoneToBuildACar;
 	private int carsDone;
+	private long startBuildCarTime;
 
 	public FactoryManager() {
 		this.pieces = new PieceMaker[PieceType.values().length];
 		this.carsDone = 0;
-
+		this.startBuildCarTime = System.currentTimeMillis();
+		
 		Piece pieceMotor = new Piece(PieceType.MOTOR, 10, 12000);
 		Piece pieceCarroceria = new Piece(PieceType.CARROCERIA, 20, 15000);
 		Piece piecePneu = new Piece(PieceType.PNEU, 100, 9000);
@@ -57,8 +59,11 @@ public class FactoryManager extends Thread {
 				}
 			}
 			if (isCarReadyToBuild) {
-				System.out.println("One car has been made!");
+				long currentMili = System.currentTimeMillis();
+				float timeToBuildTheCar = (currentMili - startBuildCarTime) / 1000;
+				System.out.println("One car has been made in " + timeToBuildTheCar + " seconds.");
 				carsDone++;
+				startBuildCarTime = currentMili;
 				for (int i = 0; i < pieces.length; i++) {
 					synchronized (pieces[i]) {
 						int needed = Car.getRequirement(pieces[i].getPiece().getProductName());

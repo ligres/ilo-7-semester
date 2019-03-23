@@ -27,7 +27,7 @@ public class MainWindow extends JFrame {
 		
 		int piecesCount = factoryManager.getPieces().length;
 		
-		this.setSize(800, 60 * (piecesCount + 1));
+		this.setSize(100 * piecesCount, 40 * (piecesCount + 1));
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setLayout(new GridLayout(piecesCount + 1, 1));
