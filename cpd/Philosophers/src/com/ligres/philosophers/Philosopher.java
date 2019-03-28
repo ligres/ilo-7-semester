@@ -5,6 +5,7 @@ import java.util.Random;
 public class Philosopher implements Runnable {
 
 	private final double STARVATION_INCREACE = 1;
+	private final int INTERACTIONS_PER_SECOND = 30;
 	private String pName;
 	private float starvation;
 	private boolean isEating;
@@ -28,31 +29,38 @@ public class Philosopher implements Runnable {
 	public void run() {
 		while (!Thread.currentThread().isInterrupted()) {
 			if (!isEating) {
-				if (!leftNeightbout.isEating && !rightNeighbour.isEating) {
-					if (starvation >= leftNeightbout.starvation && starvation >= rightNeighbour.starvation) {
-						isEating = true;
-						starvation = 0;
-						try {
-							Thread.sleep((long) (10000 * random.nextDouble()));
-						} catch (InterruptedException e) {
-							Thread.currentThread().interrupt();
-							e.printStackTrace();
-						}
-						isEating = false;
-					} else {
-						starvation += STARVATION_INCREACE;
+				boolean canEat = false;
+				synchronized (this) {
+					canEat = CheckCanEat();
+				}
+				if (canEat)
+				{
+					isEating = true;
+					starvation = 0;
+					try {
+						Thread.sleep((long) (10000 * random.nextDouble()));
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+						e.printStackTrace();
 					}
-				} else {
+					isEating = false;
+				}
+				else
+				{
 					starvation += STARVATION_INCREACE;
 				}
 			}
 			try {
-				Thread.sleep(30);
+				Thread.sleep(1000 / INTERACTIONS_PER_SECOND);
 			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private boolean CheckCanEat() {
+		return !leftNeightbout.isEating && !rightNeighbour.isEating && starvation >= leftNeightbout.starvation
+				&& starvation >= rightNeighbour.starvation;
 	}
 
 	public double getStarvation() {

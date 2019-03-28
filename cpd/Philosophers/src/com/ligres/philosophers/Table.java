@@ -1,10 +1,9 @@
 package com.ligres.philosophers;
 
-import java.util.Iterator;
-
 import com.ligres.ui.MainWindow;
 
 public class Table implements Runnable {
+	private final int PRINTS_PER_SECOND = 30;
 	private Philosopher[] philosophers;
 	private int numOfPhilosophers;
 	private MainWindow mainWindow;
@@ -45,15 +44,17 @@ public class Table implements Runnable {
 				s += philosophers[i].isEating() + ", ";
 			}
 			s += philosophers[philosophers.length - 1].isEating() + "]";
-			// System.out.println(s);
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			System.out.println(s);
+
 			if (mainWindow != null)
 			{
 				mainWindow.setColors(philosophers);
+			}
+			
+			try {
+				Thread.sleep(1000 / PRINTS_PER_SECOND);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
