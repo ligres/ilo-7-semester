@@ -22,6 +22,7 @@ public class Table implements Runnable {
 			// System.out.println(i + ": L:" + philosophers[i].getLeftNeightbout().getPhilosopherName() + " R: " + philosophers[i].getRightNeighbour().getPhilosopherName());
 			new Thread(philosophers[i]).start();
 		}
+		mainWindow = new MainWindow(numOfPhilosophers);
 	}
 
 	@Override
@@ -45,12 +46,9 @@ public class Table implements Runnable {
 			}
 			s += philosophers[philosophers.length - 1].isEating() + "]";
 			System.out.println(s);
-
-			if (mainWindow != null)
-			{
-				mainWindow.setColors(philosophers);
-			}
 			
+			mainWindow.update(philosophers);
+
 			try {
 				Thread.sleep(1000 / PRINTS_PER_SECOND);
 			} catch (InterruptedException e) {
@@ -63,9 +61,8 @@ public class Table implements Runnable {
 		return numOfPhilosophers;
 	}
 	
-	public void setMainWindow(MainWindow mainWindow) {
-		this.mainWindow = mainWindow;
+	public boolean isPhilosopherEating(int id)
+	{
+		return philosophers[id].isEating();
 	}
-	
-
 }

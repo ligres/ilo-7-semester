@@ -32,11 +32,14 @@ public class Philosopher implements Runnable {
 				boolean canEat = false;
 				synchronized (this) {
 					canEat = CheckCanEat();
+					if(canEat)
+					{
+						isEating = true;
+						starvation = 0;
+					}
 				}
 				if (canEat)
-				{
-					isEating = true;
-					starvation = 0;
+				{	
 					try {
 						Thread.sleep((long) (10000 * random.nextDouble()));
 					} catch (InterruptedException e) {
